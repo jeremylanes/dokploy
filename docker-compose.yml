@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: dokploy
+      POSTGRES_USER: dokploy
+      POSTGRES_PASSWORD: ${DOKPLOY_POSTGRES_PASSWORD}
+    volumes:
+      - dokploy_postgres_data:/var/lib/postgresql/data
+    networks:
+      - dokploy_network
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    networks:
+      - dokploy_network
+
+  dokploy:
+    image: dokploy/dokploy:canary
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+
+    environment:
+      DATABASE_URL: postgres://dokploy:${DOKPLOY_POSTGRES_PASSWORD}@postgres:5432/dokploy
+      REDIS_HOST: redis
+      DOKPLOY_DISABLE_TRAEFIK: "true"
+      DOKPLOY_BASE_URL: https://${DOKPLOY_DOMAIN}
+      NODE_ENV: production
+
+    volumes:
+      - dokploy_data:/etc/dokploy
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    expose:
+      - 3000
+
+    networks:
+      - dokploy_network
+      - traefik_proxy
+
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_proxy
+
+      - traefik.http.routers.dokploy.rule=Host(`${DOKPLOY_DOMAIN}`)
+      - traefik.http.routers.dokploy.entrypoints=websecure
+      - traefik.http.routers.dokploy.tls.certresolver=myresolver
+
+      - traefik.http.services.dokploy.loadbalancer.server.port=3000
+
+      - traefik.http.routers.dokploy-http.rule=Host(`${DOKPLOY_DOMAIN}`)
+      - traefik.http.routers.dokploy-http.entrypoints=web
+      - traefik.http.routers.dokploy-http.middlewares=dokploy-https-redirect@docker
+
+      - traefik.http.middlewares.dokploy-https-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.dokploy-https-redirect.redirectscheme.permanent=true
+
+networks:
+  dokploy_network:
+    internal: true
+
+  traefik_proxy:
+    external: true
+
+volumes:
+  dokploy_data:
+  dokploy_postgres_data:
