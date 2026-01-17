@@ -1,25 +1,31 @@
 services:
   postgres:
-    image: postgres:16-alpine
     restart: always
+    image: postgres:18.1-trixie
+    
     environment:
-      POSTGRES_DB: dokploy
-      POSTGRES_USER: dokploy
+      POSTGRES_DB: ${DOKPLOY_POSTGRES_DATABASE_NAME}
+      POSTGRES_USER: ${DOKPLOY_POSTGRES_USER}
       POSTGRES_PASSWORD: ${DOKPLOY_POSTGRES_PASSWORD}
     volumes:
-      - dokploy_postgres_data:/var/lib/postgresql/data
+      - dokploy_postgres_data:/var/lib/postgresql
     networks:
       - dokploy_network
 
   redis:
-    image: redis:7-alpine
     restart: always
+    image: redis:alpine
+    container_name: dokploy_redis
+    # command: redis-server --loglevel debug # ??
+    # expose:
+    #   - 6379
+    
     networks:
       - dokploy_network
 
   dokploy:
-    image: dokploy/dokploy:canary
     restart: always
+    image: dokploy/dokploy:canary
     depends_on:
       - postgres
       - redis
@@ -32,8 +38,8 @@ services:
       NODE_ENV: production
 
     volumes:
-      - dokploy_data:/etc/dokploy
-      - /var/run/docker.sock:/var/run/docker.sock
+      - dokploy_data:/etc/dokploy # ??
+      - /var/run/docker.sock:/var/run/docker.sock # ??
 
     expose:
       - 3000
