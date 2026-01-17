@@ -4,8 +4,8 @@ services:
     image: postgres:18.1-trixie
     
     environment:
-      POSTGRES_DB: ${DOKPLOY_POSTGRES_DATABASE_NAME}
-      POSTGRES_USER: ${DOKPLOY_POSTGRES_USER}
+      POSTGRES_DB: dokploy
+      POSTGRES_USER: dokploy
       POSTGRES_PASSWORD: ${DOKPLOY_POSTGRES_PASSWORD}
     volumes:
       - dokploy_postgres_data:/var/lib/postgresql

@@ -24,8 +24,6 @@ Create a `.env` file in the root directory based on the following template:
 
 ```env
 # Postgres Database Configuration
-DOKPLOY_POSTGRES_DATABASE_NAME=dokploy
-DOKPLOY_POSTGRES_USER=lane
 DOKPLOY_POSTGRES_PASSWORD=alpine
 
 # Domain Configuration
