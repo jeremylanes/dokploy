@@ -4,12 +4,12 @@ A containerized deployment of [Dokploy](https://dokploy.com/), an open-source al
 
 ## 📋 Prerequisites
 
-Before starting this project, you **must** have a running instance of Traefik. 
+Before starting this project, you **must** have a running instance of Traefik on your machine.
 
-The configuration in this repository depends on the `traefik_proxy` external network. We recommend using the following Traefik setup:
+This project is specifically designed to work with the Traefik setup from:
 - **GitHub Repository**: [jeremylanes/traefik](https://github.com/jeremylanes/traefik)
 
-Ensure Traefik is up and running before attempting to launch Dokploy.
+**Note:** The `traefik_proxy` external network must be active. Ensure Traefik is up and running before launching Dokploy.
 
 ## 🛠️ Installation & Setup
 
